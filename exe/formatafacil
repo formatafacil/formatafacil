@@ -2,12 +2,33 @@
 
 require 'gli'
 require "formatafacil"
+require 'formatafacil/template'
+require 'formatafacil/artigo_tarefa'
+
+
 
 include GLI::App
 
-program_desc 'Gera documentos na norma da ABNT a partir de textos escritos em Asciidoc.'
+program_desc 'Gera documentos na norma da ABNT a partir de textos escritos em Markdown.'
 
 version Formatafacil::VERSION
 
 subcommand_option_handling :normal
 arguments :strict
+
+desc 'Gera artigos em latex e compila para pdf'
+command :artigo do |c|
+  
+  c.desc 'Gera o arquivo pdf compilando o arquivo latex'
+  c.switch :pdf
+  
+  c.flag [:t,:template], :default_value => "abnt"
+  
+  c.action do |global,options,args|
+    tarefa = Formatafacil::ArtigoTarefa.new(:formato => options['template'])
+    tarefa.executa
+  end
+  
+end
+
+exit run(ARGV)

@@ -1,6 +1,7 @@
+require 'formatafacil/template'
 require 'formatafacil/tarefa'
-require 'formatafacil/templates'
 require 'open3'
+require 'yaml'
 
 module Formatafacil
   
@@ -87,9 +88,9 @@ module Formatafacil
     end
     
     def executa_pandoc_salvando_latex
-      t = Formatafacil::Templates.new()
+      t = Formatafacil::Template.new()
       data_dir = t.directory
-      p t
+      
       system "pandoc -s #{@arquivo_texto} #{@arquivo_saida_yaml}  --data-dir=#{data_dir} --template=artigo-#{formato} -f markdown -t latex -o #{@arquivo_saida_latex}"
     end
     

@@ -2,7 +2,7 @@ require 'formatafacil/tarefa'
 
 
 module Formatafacil
-  class Templates < Tarefa
+  class Template
   
     attr_accessor 'modelos'
     # Derectory of templates
