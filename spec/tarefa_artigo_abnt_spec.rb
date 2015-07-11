@@ -24,6 +24,7 @@ RESUMO
     data = "18/07/2015"
     titulo_da_secao = "Primeira seção"
     primeiro_paragrafo = "Texto do primeiro parágrafo!"
+    citacao = "Minha citação aqui."
     texto = <<TEXTO
 \% #{titulo_da_obra}
 \% #{autores}
@@ -32,6 +33,9 @@ RESUMO
 # #{titulo_da_secao}
 
 #{primeiro_paragrafo}
+
+> #{citacao}
+
 TEXTO
 
     bibliografia = <<BIBLIOGRAFIA
@@ -42,7 +46,6 @@ GOMES, L. G. F. F. *Novela e sociedade no Brasil*. Niterói: EdUFF,
 Bibliografia: p. 131-132. ISBN 85-228-0268-8.
 
 BIBLIOGRAFIA
-
 
     Dir.mktmpdir() { |dir| Dir.chdir(dir){
       Dir.mkdir('config')
@@ -55,12 +58,9 @@ BIBLIOGRAFIA
       
       tarefa.executa
       
-      
-      
       expect(File.file?('artigo.yaml')).to eq(true)
       result = YAML.load_file(tarefa.arquivo_saida_yaml)
       expect(result['resumo'].include?(dentro_do_resumo)).to eq(true)
-      
       
       expect(tarefa.artigo_latex['resumo'].include?(dentro_do_resumo)).to eq(true)
       
@@ -70,6 +70,8 @@ BIBLIOGRAFIA
 
       expect(conteudo.include?('abnTeX2')).to eq(true)
       expect(conteudo.include?(titulo_da_obra)).to eq(true)
+      expect(conteudo.include?(autores)).to eq(true)
+      
       expect(conteudo.include?(data)).to eq(true)
       expect(conteudo.include?(dentro_do_resumo)).to eq(true)
       expect(conteudo.include?("\\textbf{words}")).to eq(true)
@@ -78,6 +80,7 @@ BIBLIOGRAFIA
       expect(conteudo.include?(titulo_da_secao)).to eq(true)
       expect(conteudo.include?("\\section{#{titulo_da_secao}}")).to eq(true)
       expect(conteudo.include?(primeiro_paragrafo)).to eq(true)
+      expect(conteudo.include?("\\begin{quote}\n#{citacao}\n\\end{quote}")).to eq(true)
       
       expect(conteudo.include?("GOMES")).to eq(true)
       #expect(conteudo).to eq("")
