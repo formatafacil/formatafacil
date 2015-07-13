@@ -1,6 +1,8 @@
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'formatafacil'
-
+require 'formatafacil/tarefa'
+require 'tmpdir'
+require 'yaml'
 
 def criaExemploDeArtigo(tarefa)
   
@@ -17,5 +19,12 @@ def criaExemploDeArtigo(tarefa)
   expect(File.file?(tarefa.arquivo_texto)).to eq(true)
   expect(File.file?(tarefa.arquivo_texto)).to eq(true)
   expect(File.file?(tarefa.arquivo_texto)).to eq(true)
-  
+end
+
+
+def cria_arquivo_configuracao(hash)
+  unless File.directory?('config')
+    FileUtils.mkdir_p('config')
+  end
+  File.open(Formatafacil::Tarefa.arquivo_configuracao, 'w'){ |file| file.write(hash.to_yaml)}
 end

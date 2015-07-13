@@ -18,7 +18,6 @@ module Formatafacil
           if file
             @modelos[File.basename(file, '.tex')] = file
             @directory = "#{dir}/formatafacil"
-            puts "found!!! #{file}"
           end
         }
       }

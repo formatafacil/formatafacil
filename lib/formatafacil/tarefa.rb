@@ -9,5 +9,11 @@ module Formatafacil
     def executa
     end
     
+    
+    def self.arquivo_configuracao
+      'config/1-configuracoes-gerais.yaml'
+    end
+
+    
   end
 end
