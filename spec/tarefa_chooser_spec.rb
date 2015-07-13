@@ -19,11 +19,11 @@ describe Formatafacil::TarefaChooser do
     }}
   end
 
-
   it 'dá error se não existir o arquivo de configurações gerais' do
     c = Formatafacil::TarefaChooser.new
-    expect { c.escolhe_tarefa }.to raise_error("Não foi possível localizar o arquivo de configuração: #{Formatafacil::Tarefa.arquivo_configuracao}")
+    expect { c.escolhe_tarefa }.to raise_error(Formatafacil::ArquivoConfiguracaoAusenteException, "Não foi possível localizar o arquivo de configuração: config/1-configuracoes-gerais.yaml")
   end
+
 
 
 end
