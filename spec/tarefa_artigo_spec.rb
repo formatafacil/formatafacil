@@ -17,17 +17,42 @@ describe Formatafacil::ArtigoTarefa do
     tarefa = Formatafacil::ArtigoTarefa.new
 
     expect(tarefa).to receive('ler_arquivo').with("config/abstract.md") { "abstract text" }
+    expect(tarefa).to receive('ler_metadados_do_arquivo').with("config/abstract.md") { {} }
     expect(tarefa).to receive('ler_arquivo').with("config/resumo.md") { "resumo text" }
     expect(tarefa).to receive('ler_arquivo').with("bibliografia.md") { "bibliografia text" }
     expect(tarefa).to receive('ler_arquivo').with("config/1-configuracoes-gerais.yaml") { {'modelo'=>'artigo-abnt'}.to_yaml }    
     tarefa.ler_configuracao
     
     expect(tarefa.artigo['abstract']).to eq('abstract text')
+    #expect(tarefa.artigo['titulo_em_ingles']).to eq('abstract text')
     expect(tarefa.artigo['resumo']).to eq('resumo text')
     expect(tarefa.artigo['bibliografia']).to eq('bibliografia text')
     
     expect(tarefa.artigo['modelo']).to eq('artigo-abnt')
 
+  end
+
+  it 'ler metadados dos arquivos de configuracao' do
+    texto = <<TEXTO
+Exemplo de texto de um arquivo de configuração
+
+---
+nome_do_parametro: "valor do  parâmetro"
+numero: 15
+boo_true: true
+boo_false: false
+boo_sim: sim
+boo_nao: não
+---
+TEXTO
+    
+    Tempfile.open('abstract') do |file|
+      file.write(texto)
+      file.close
+      t = Formatafacil::ArtigoTarefa.new
+      expect(t.ler_metadados_do_arquivo(file.path)).to eq({'nome_do_parametro' => 'valor do parâmetro', 'numero'=>'15', 'boo_true'=> true, 'boo_false'=>false, 'boo_sim'=> true, 'boo_nao'=>false})
+    end
+    
   end
 
 
@@ -65,6 +90,8 @@ describe Formatafacil::ArtigoTarefa do
     }
   end
 
+
+
   it 'gera um artigo latex com o template apropriado' do
     tarefa = Formatafacil::ArtigoTarefa.new(:modelo => 'abnt')
     
@@ -79,7 +106,12 @@ entre 150 a 500 palavras ou **words**.
 RESUMO
 
     keywords = 'latex. abntex. formatafacil.'
+    titulo_em_ingles= 'English title'
     abstract = <<ABSTRACT
+---
+titulo_em_ingles: "#{titulo_em_ingles}"
+---
+
 According to ABNT NBR 6022:2003, an abstract in foreign language is a back
 matter mandatory element.
 
@@ -87,7 +119,7 @@ matter mandatory element.
 
 ABSTRACT
 
-    ingles = {"modelo" => "artigo-abnt","titulo_em_ingles"=>'English title', 'incluir_abstract'=>'sim'}
+    ingles = {"modelo" => "artigo-abnt"}
     
     titulo_da_obra = "Título da Obra"
     autores = "Nome-do-autor"
@@ -137,6 +169,7 @@ BIBLIOGRAFIA
       expect(result['resumo'].include?(dentro_do_resumo)).to eq(true)
       
       expect(tarefa.artigo_latex['resumo'].include?(dentro_do_resumo)).to eq(true)
+      expect(tarefa.artigo['titulo_em_ingles']).to eq(titulo_em_ingles)
       
       expect(File.file?(tarefa.arquivo_saida_latex)).to eq(true)
       conteudo = ""
@@ -158,16 +191,13 @@ BIBLIOGRAFIA
       
       expect(conteudo.include?("GOMES")).to eq(true)
       
+      
       usar_ingles = true
-      expect(conteudo.include?(ingles["titulo_em_ingles"])).to eq(usar_ingles)
+      expect(conteudo.include?(titulo_em_ingles)).to eq(usar_ingles)
       expect(conteudo.include?(keywords)).to eq(usar_ingles)
       #expect(conteudo).to eq("")
       
     }}
   end
-
-
-
-
 
 end

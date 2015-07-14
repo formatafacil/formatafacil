@@ -2,6 +2,7 @@ require 'formatafacil/template'
 require 'formatafacil/tarefa'
 require 'open3'
 require 'yaml'
+require 'json'
 
 module Formatafacil
   
@@ -50,14 +51,56 @@ module Formatafacil
     # @arquivo_resumo
     def ler_configuracao
       @artigo.merge!(YAML.load(ler_arquivo(Formatafacil::Tarefa.arquivo_configuracao)))
+      converte_parametros_para_boolean
       
       @modelo = @artigo['modelo']
       
       @artigo['abstract'] = ler_arquivo(@arquivo_abstract)
+      @artigo.merge!(ler_metadados_do_arquivo(@arquivo_abstract))
       @artigo['resumo'] = ler_arquivo(@arquivo_resumo)
       @artigo['bibliografia'] = ler_arquivo(@arquivo_bibliografia)
       
-      converte_parametros_para_boolean
+    end
+    
+    def ler_metadados_do_arquivo(arquivo)
+      result = {}
+      meta = JSON.parse(`pandoc -t json #{arquivo}`)[0]['unMeta']
+      meta.each do |k,v|
+        result[k]=converte_valor_da_arvore_pandoc(v)
+      end
+      result
+    end
+    
+    def converte_valor_da_arvore_pandoc(node)
+      #  {"boo_false"=>{"t"=>"MetaBool", "c"=>false}, "boo_true"=>{"t"=>"MetaBool", "c"=>true}, "nome_do_parametro"=>{"t"=>"MetaInlines", "c"=>[{"t"=>"Str", "c"=>"valor"}, {"t"=>"Space", "c"=>[]}, {"t"=>"Str", "c"=>"do"}, {"t"=>"Space", "c"=>[]}, {"t"=>"Str", "c"=>"parâmetro"}]}, "numero"=>{"t"=>"MetaString", "c"=>"15"}}
+      result = nil
+
+      case node['t']
+      when "MetaString"
+        result = node['c']
+      when "MetaBool"
+        result = node['c']
+      when "MetaInlines"
+        string = ""
+        node['c'].each do |node|
+          case node['t']
+          when 'Str'
+            string += node['c']
+          when 'Space'
+            string += " "
+          end
+        end
+        if "sim".casecmp(string).zero?
+          result = true
+        elsif "não".casecmp(string).zero?
+          result = false
+        else
+          result = string
+        end
+      else
+        result = node
+      end
+      result
     end
     
     def ler_arquivo(arquivo)
@@ -95,6 +138,10 @@ module Formatafacil
     end
 
     def salva_configuracao_yaml_para_inclusao_em_pandoc
+      
+
+      
+      
       File.open(@arquivo_saida_yaml, 'w'){ |file|
         file.write @artigo_latex.to_yaml
         file.write("---")
