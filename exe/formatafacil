@@ -27,11 +27,23 @@ command :artigo do |c|
   c.switch :pdf
   
   c.desc 'Seleciona o modelo do artigo'
-  c.flag [:m,:modelo], :default_value => "abnt"
+  c.flag [:m,:modelo]
   
   c.action do |global,options,args|
-    tarefa = Formatafacil::ArtigoTarefa.new(:modelo => options['template'])
-    tarefa.executa
+    if (global['logfile'])
+      logger = Logger.new('formatafacil.log')
+    else
+      logger = Logger.new(STDERR)
+    end
+    logger.level = Logger::WARN
+    
+    begin
+      tarefa = Formatafacil::ArtigoTarefa.new()
+      tarefa.logger = logger
+      tarefa.executa
+    rescue Exception => e
+      logger.error {e.message}
+    end
   end
   
 end

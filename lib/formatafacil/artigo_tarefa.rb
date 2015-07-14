@@ -49,12 +49,21 @@ module Formatafacil
     #
     # @arquivo_resumo
     def ler_configuracao
-      File.open(@arquivo_abstract, 'r') { |f| @artigo['abstract'] = f.read }
-      File.open(@arquivo_resumo, 'r') { |f| @artigo['resumo'] = f.read }
-      File.open(@arquivo_bibliografia, 'r') { |f| @artigo['bibliografia'] = f.read }
+      @artigo.merge!(YAML.load(ler_arquivo(Formatafacil::Tarefa.arquivo_configuracao)))
       
-      @artigo.merge!(YAML.load_file(@arquivo_ingles))
+      @modelo = @artigo['modelo']
+      
+      @artigo['abstract'] = ler_arquivo(@arquivo_abstract)
+      @artigo['resumo'] = ler_arquivo(@arquivo_resumo)
+      @artigo['bibliografia'] = ler_arquivo(@arquivo_bibliografia)
+      
       converte_parametros_para_boolean
+    end
+    
+    def ler_arquivo(arquivo)
+      result = ""
+      File.open(arquivo, 'r') { |f| result = f.read }
+      result
     end
     
     def converte_parametros_para_boolean
@@ -92,32 +101,12 @@ module Formatafacil
       }
     end
 
-    def cria_arquivo(arquivo, string)
-      File.open(arquivo, 'w'){ |file| file.write string }
-    end
-
-    def cria_arquivo_texto(string)
-      cria_arquivo(@arquivo_texto, string)
-    end
-    def cria_arquivo_resumo(string)
-      cria_arquivo(@arquivo_resumo, string)
-    end
-    def cria_arquivo_abstract(string)
-      cria_arquivo(@arquivo_abstract, string)
-    end
-    def cria_arquivo_bibliografia(string)
-      cria_arquivo(@arquivo_bibliografia, string)
-    end
-    def cria_arquivo_ingles(hash)
-      cria_arquivo(@arquivo_ingles, hash.to_yaml)
-    end
-
     
     def executa_pandoc_salvando_latex
       t = Formatafacil::Template.new()
       data_dir = t.directory
       
-      system "pandoc --smart -s #{@arquivo_texto} #{@arquivo_saida_yaml}  --data-dir=#{data_dir} --template=artigo-#{modelo} -f markdown -t latex -o #{@arquivo_saida_latex}"
+      system "pandoc --smart -s #{@arquivo_texto} #{@arquivo_saida_yaml}  --data-dir=#{data_dir} --template=#{modelo} -f markdown -t latex -o #{@arquivo_saida_latex}"
     end
     
     def executa_pdflatex

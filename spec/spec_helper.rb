@@ -5,7 +5,6 @@ require 'tmpdir'
 require 'yaml'
 
 def criaExemploDeArtigo(tarefa)
-  
   Dir.mkdir 'config'
   
   texto = "meu-texto"
@@ -28,3 +27,21 @@ def cria_arquivo_configuracao(hash)
   end
   File.open(Formatafacil::Tarefa.arquivo_configuracao, 'w'){ |file| file.write(hash.to_yaml)}
 end
+
+def cria_arquivo(arquivo, string)
+  File.open(arquivo, 'w'){ |file| file.write string }
+end
+
+def cria_arquivo_texto(t,string)
+  cria_arquivo(t.arquivo_texto, string)
+end
+def cria_arquivo_resumo(t,string)
+  cria_arquivo(t.arquivo_resumo, string)
+end
+def cria_arquivo_abstract(t,string)
+  cria_arquivo(t.arquivo_abstract, string)
+end
+def cria_arquivo_bibliografia(t,string)
+  cria_arquivo(t.arquivo_bibliografia, string)
+end
+

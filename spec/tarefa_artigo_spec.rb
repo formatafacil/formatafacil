@@ -7,22 +7,45 @@ require 'yaml'
 describe Formatafacil::ArtigoTarefa do
 
   it 'possui configuração padrão para leitura dos arquivos' do
-    terafa = Formatafacil::ArtigoTarefa.new
-    expect(terafa.arquivo_resumo()).to eq("config/resumo.md")
-    expect(terafa.arquivo_abstract()).to eq("config/abstract.md")
-    expect(terafa.arquivo_texto()).to eq("artigo.md")
+    tarefa = Formatafacil::ArtigoTarefa.new
+    expect(tarefa.arquivo_resumo()).to eq("config/resumo.md")
+    expect(tarefa.arquivo_abstract()).to eq("config/abstract.md")
+    expect(tarefa.arquivo_texto()).to eq("artigo.md")
+  end
+  
+  it 'ler configurações gerais' do
+    tarefa = Formatafacil::ArtigoTarefa.new
+
+    expect(tarefa).to receive('ler_arquivo').with("config/abstract.md") { "abstract text" }
+    expect(tarefa).to receive('ler_arquivo').with("config/resumo.md") { "resumo text" }
+    expect(tarefa).to receive('ler_arquivo').with("bibliografia.md") { "bibliografia text" }
+    expect(tarefa).to receive('ler_arquivo').with("config/1-configuracoes-gerais.yaml") { {'modelo'=>'artigo-abnt'}.to_yaml }    
+    tarefa.ler_configuracao
+    
+    expect(tarefa.artigo['abstract']).to eq('abstract text')
+    expect(tarefa.artigo['resumo']).to eq('resumo text')
+    expect(tarefa.artigo['bibliografia']).to eq('bibliografia text')
+    
+    expect(tarefa.artigo['modelo']).to eq('artigo-abnt')
+
   end
 
-  it 'possui um formato para geração' do
-    terafa = Formatafacil::ArtigoTarefa.new(:modelo => 'sbc')
-    expect(terafa.modelo).to eq("sbc")
-    expect(terafa.arquivo_resumo()).to eq("config/resumo.md")
-    expect(terafa.arquivo_abstract()).to eq("config/abstract.md")
-    expect(terafa.arquivo_texto()).to eq("artigo.md")
+
+
+
+  context "Quando executado a partir de um serviço" do
+    it "behaves one way" do
+      # ...
+    end
+  end  
+
+  it 'especifica um modelo para geração do artigo' do
+    tarefa = Formatafacil::ArtigoTarefa.new(:modelo => 'abnt')
+    expect(tarefa.modelo).to eq("abnt")
   end
   
   it 'gera um arquivo latex e compila pdf com o formato de artigo apropriado' do
-    tarefa = Formatafacil::ArtigoTarefa.new(:modelo => 'sbc')
+    tarefa = Formatafacil::ArtigoTarefa.new(:modelo => 'abnt')
     
     Dir.mktmpdir() { |dir|
       Dir.chdir(dir){
@@ -64,7 +87,7 @@ matter mandatory element.
 
 ABSTRACT
 
-    ingles = {"titulo_em_ingles"=>'English title', 'incluir_abstract'=>'sim'}
+    ingles = {"modelo" => "artigo-abnt","titulo_em_ingles"=>'English title', 'incluir_abstract'=>'sim'}
     
     titulo_da_obra = "Título da Obra"
     autores = "Nome-do-autor"
@@ -96,16 +119,16 @@ BIBLIOGRAFIA
 
     Dir.mktmpdir() { |dir| Dir.chdir(dir){
       Dir.mkdir('config')
-      tarefa.cria_arquivo_texto(texto)
+      cria_arquivo_texto(tarefa, texto)
       expect(File.file?(tarefa.arquivo_texto)).to eq(true)
-      tarefa.cria_arquivo_resumo(resumo)
+      cria_arquivo_resumo(tarefa, resumo)
       expect(File.file?(tarefa.arquivo_resumo)).to eq(true)
-      tarefa.cria_arquivo_abstract(abstract)
+      cria_arquivo_abstract(tarefa, abstract)
       expect(File.file?(tarefa.arquivo_abstract)).to eq(true)
-      tarefa.cria_arquivo_bibliografia(bibliografia)
+      cria_arquivo_bibliografia(tarefa, bibliografia)
       expect(File.file?(tarefa.arquivo_bibliografia)).to eq(true)
-      tarefa.cria_arquivo_ingles(ingles)
-      expect(File.file?(tarefa.arquivo_ingles)).to eq(true)
+      cria_arquivo_configuracao(ingles)
+      expect(File.file?(Formatafacil::Tarefa.arquivo_configuracao)).to eq(true)
       
       tarefa.executa
       
