@@ -15,7 +15,7 @@ Gem::Specification.new do |spec|
   
   spec.summary       = %q{Compila arquivos escritos em Markdown para formatos.}
   spec.description   = %q{Com essa ferramenta você poderá compilar trabalhos de conclusão de curso (monografia, dissertação ou tese) ou artigos com as normas da ABNT ou outra específica }
-  spec.homepage      = "https://github.com/edusantana/formatafacil"
+  spec.homepage      = "https://github.com/formatafacil/formatafacil"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
