@@ -49,6 +49,35 @@ command :artigo do |c|
   
 end
 
+
+desc 'Auto detecta o comando com base no arquivo de configuração'
+command :compila do |c|
+
+  c.desc 'Possíveis valores: artigo'
+  c.flag [:d,:documento]
+  
+  
+  c.action do |global,options,args|
+    
+    if (global['logfile'])
+      logger = Logger.new('formatafacil.log')
+    else
+      logger = Logger.new(STDOUT)
+    end
+    
+    begin
+      Formatafacil::Compila.new().compila_artigo
+    rescue Exception => e
+      logger.error {e.message}
+    end
+    
+  end
+  
+end
+
+
+
+
 desc 'Auto detecta o comando com base no arquivo de configuração'
 command :auto do |c|
   
