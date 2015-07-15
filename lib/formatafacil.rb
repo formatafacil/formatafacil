@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require "formatafacil/version"
 require "formatafacil/artigo_tarefa"
 require "formatafacil/template"

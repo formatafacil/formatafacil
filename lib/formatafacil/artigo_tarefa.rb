@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require 'formatafacil/template'
 require 'formatafacil/tarefa'
 require 'open3'

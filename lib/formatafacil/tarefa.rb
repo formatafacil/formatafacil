@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 module Formatafacil
   class Tarefa
     attr_accessor :logger
