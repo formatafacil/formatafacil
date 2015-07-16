@@ -17,6 +17,10 @@ Or install it yourself as:
 
     $ gem install formatafacil
 
+## Dependência
+
+- `qpdf` se deseja compilar pdf otimizados para web
+
 ## Usage
 
 TODO: Write usage instructions here

@@ -1,5 +1,9 @@
 # formatafacil Change Log
 
+## 0.1.5
+
+- fix bug: otimizar pdfs para a WEB
+
 ## 0.1.4
 
 - Possibilita otimizar pdfs para a WEB

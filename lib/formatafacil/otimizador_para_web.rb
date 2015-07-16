@@ -2,8 +2,6 @@
 module Formatafacil
   class OtimizadorParaWeb
 
-    BACKUP_PREFIX = "bkp-"
-
     attr_accessor :arquivo
 
     def initialize(arquivo)
