@@ -21,7 +21,6 @@ arguments :strict
 desc 'Emite mensages de log para o arquivo formatafacil.log'
 switch :logfile
 
-
 desc 'Gera artigos em latex e compila para pdf'
 command :artigo do |c|
   
@@ -56,6 +55,9 @@ command :compila do |c|
 
   c.desc 'Possíveis valores: artigo'
   c.flag [:d,:documento]
+
+  c.desc 'Linealiza o pdf otimizando-o para web'
+  c.switch [:w, 'otimiza-para-web']
   
   
   c.action do |global,options,args|
@@ -68,6 +70,7 @@ command :compila do |c|
     
     begin
       Formatafacil::Compila.new().compila_artigo
+      Formatafacil::OtimizadorParaWeb.new(Formatafacil::ARTIGO_PDF).otimiza
     rescue Exception => e
       logger.error {e.message}
     end
