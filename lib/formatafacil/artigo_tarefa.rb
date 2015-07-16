@@ -139,14 +139,13 @@ module Formatafacil
       }
     end
 
+    # Precisa gerar arquivos com quebra de linha antes e depois
+    # porque pandoc utiliza 
     def salva_configuracao_yaml_para_inclusao_em_pandoc
-      
-
-      
-      
       File.open(@arquivo_saida_yaml, 'w'){ |file|
+        file.write("\n")
         file.write @artigo_latex.to_yaml
-        file.write("---")
+        file.write("---\n")
       }
     end
 
