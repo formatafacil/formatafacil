@@ -8,6 +8,7 @@ require 'formatafacil/template'
 require 'formatafacil/artigo_tarefa'
 require 'formatafacil/tarefa_chooser'
 require 'formatafacil/compila'
+require 'formatafacil/otimizador_para_web'
 
 include GLI::App
 
@@ -70,7 +71,10 @@ command :compila do |c|
     
     begin
       Formatafacil::Compila.new().compila_artigo
-      Formatafacil::OtimizadorParaWeb.new(Formatafacil::ARTIGO_PDF).otimiza
+      if (options['w'])
+        logger.info "Otimizando para web: #{Formatafacil::ARTIGO_PDF}"
+        Formatafacil::OtimizadorParaWeb.new(Formatafacil::ARTIGO_PDF).otimiza 
+      end
     rescue Exception => e
       logger.error {e.message}
     end
