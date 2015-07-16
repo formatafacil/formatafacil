@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'formatafacil/otimizador_para_web.rb'
+require 'formatafacil/otimizador_para_web'
 require 'securerandom'
 
 describe Formatafacil::OtimizadorParaWeb do
