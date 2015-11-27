@@ -5,15 +5,13 @@ require 'tmpdir'
 require 'yaml'
 
 def criaExemploDeArtigo(tarefa)
-  Dir.mkdir 'config'
-  
   texto = "meu-texto"
   resumo = "**meu-resumo**\n"
   abstract = 'my-abstract'
   File.open(tarefa.arquivo_texto, 'w'){ |file| file.write (texto)}
   File.open(tarefa.arquivo_resumo, 'w'){ |file| file.write (resumo)}
   File.open(tarefa.arquivo_abstract, 'w'){ |file| file.write (abstract)}
-      
+
   #verifica que os arquivos foram criados
   expect(File.file?(tarefa.arquivo_texto)).to eq(true)
   expect(File.file?(tarefa.arquivo_texto)).to eq(true)
@@ -44,4 +42,3 @@ end
 def cria_arquivo_bibliografia(t,string)
   cria_arquivo(t.arquivo_bibliografia, string)
 end
-

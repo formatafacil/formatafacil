@@ -8,22 +8,22 @@ require 'yaml'
 
 describe Formatafacil::TarefaChooser do
 
-  it 'escolhe a tarefa com base no arquivo de configuração' do
-    c = Formatafacil::TarefaChooser.new
-    Dir.mktmpdir() { |dir| Dir.chdir(dir){
-      cria_arquivo_configuracao({'tipo' => 'artigo', 'modelo'=>'abnt'})
-      expect(File.exist?(Formatafacil::Tarefa.arquivo_configuracao)).to eq(true)
-      
-      t = c.escolhe_tarefa
-      expect(t).to be_an_instance_of(Formatafacil::ArtigoTarefa)
-    }}
+  context 'Buscando uma tarefa para ser executada com base nos arquivos do diretório atual' do
+    context 'Quando existe um arquivo com o mesmo nome de um modelo' do
+      it 'Cria uma tarefa ArtigoTarefa com o modelo encontrado' do
+        c = Formatafacil::TarefaChooser.new
+        allow(c).to receive('existe_arquivo_de_texto?').with("artigo-abnt.md").and_return("true")
+        tarefa = c.escolhe_tarefa
+        expect(tarefa.modelo).to eq("artigo-abnt")
+      end
+    end
+
+    context 'Quando NÃO existe arquivo de texto nomeado a partir de um modelo' do
+      it 'Emite um erro indicando que não encontrou arquivo de texto com base nos modelos disponíveis' do
+        c = Formatafacil::TarefaChooser.new
+        expect { c.escolhe_tarefa }.to raise_error(Formatafacil::ArquivoDeTextoNaoEncontradoException)
+      end
+    end
   end
-
-  it 'dá error se não existir o arquivo de configurações gerais' do
-    c = Formatafacil::TarefaChooser.new
-    expect { c.escolhe_tarefa }.to raise_error(Formatafacil::ArquivoConfiguracaoAusenteException, "Não foi possível localizar o arquivo de configuração: config/1-configuracoes-gerais.yaml")
-  end
-
-
 
 end

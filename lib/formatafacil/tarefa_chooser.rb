@@ -7,15 +7,33 @@ module Formatafacil
   class ArquivoConfiguracaoAusenteException < Exception
   end
 
+  ##
+  # Não encontrou um arquivo de texto com base nos modelos disponíveis.
+  #
+  class ArquivoDeTextoNaoEncontradoException < Exception
+  end
+
+
   class TarefaChooser
 
     def escolhe_tarefa
-      raise Formatafacil::ArquivoConfiguracaoAusenteException, "Não foi possível localizar o arquivo de configuração: #{Formatafacil::Tarefa.arquivo_configuracao}" unless File.exist?(Formatafacil::Tarefa.arquivo_configuracao)
-      Formatafacil::ArtigoTarefa.new
+      Formatafacil::TarefaModelos.new().modelos_disponiveis.each do |modelo|
+        if existe_arquivo_de_texto?(markdown_file(modelo)) then
+          return Formatafacil::ArtigoTarefa.new(modelo: modelo)
+        else
+          raise ArquivoDeTextoNaoEncontradoException
+        end
+      end
     end
-    
+
+    def markdown_file(file)
+      "#{file}.md"
+    end
+
+    def existe_arquivo_de_texto?(arquivo)
+      File.exist?(arquivo)
+    end
+
   end
-  
-  
 
 end

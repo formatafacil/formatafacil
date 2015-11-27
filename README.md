@@ -19,6 +19,8 @@ Or install it yourself as:
 
 ## Dependência
 
+- `pandoc` para gerar os códigos latex
+- `pdflatex` - para compilar texto em pdf
 - `qpdf` se deseja compilar pdf otimizados para web
 
 ## Usage
@@ -60,7 +62,7 @@ Cria um diretório e estrutura de um artigo no formato do sbc:
 
 ## make configuration easy for advanced users
 
-TODO 
+TODO
 
 ## install and distribute painlessly
 

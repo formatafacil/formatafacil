@@ -7,6 +7,7 @@ require "formatafacil"
 require 'formatafacil/template'
 require 'formatafacil/artigo_tarefa'
 require 'formatafacil/tarefa_chooser'
+require 'formatafacil/tarefa_modelos'
 require 'formatafacil/compila'
 require 'formatafacil/otimizador_para_web'
 
@@ -24,13 +25,13 @@ switch :logfile
 
 desc 'Gera artigos em latex e compila para pdf'
 command :artigo do |c|
-  
+
   c.desc 'Gera o arquivo pdf compilando o arquivo latex'
   c.switch :pdf
-  
+
   c.desc 'Seleciona o modelo do artigo'
   c.flag [:m,:modelo]
-  
+
   c.action do |global,options,args|
     if (global['logfile'])
       logger = Logger.new('formatafacil.log')
@@ -38,7 +39,7 @@ command :artigo do |c|
       logger = Logger.new(STDERR)
     end
     logger.level = Logger::WARN
-    
+
     begin
       tarefa = Formatafacil::ArtigoTarefa.new()
       tarefa.logger = logger
@@ -47,11 +48,11 @@ command :artigo do |c|
       logger.error {e.message}
     end
   end
-  
+
 end
 
 
-desc 'Auto detecta o comando com base no arquivo de configuração'
+desc 'Compila artigo para pdf'
 command :compila do |c|
 
   c.desc 'Possíveis valores: artigo'
@@ -59,46 +60,43 @@ command :compila do |c|
 
   c.desc 'Linealiza o pdf otimizando-o para web'
   c.switch [:w, 'otimiza-para-web']
-  
-  
+
+
   c.action do |global,options,args|
-    
+
     if (global['logfile'])
       logger = Logger.new('formatafacil.log')
     else
       logger = Logger.new(STDOUT)
     end
-    
+
     begin
       Formatafacil::Compila.new().compila_artigo
       if (options['w'])
         logger.info "Otimizando para web: #{Formatafacil::ARTIGO_PDF}"
-        Formatafacil::OtimizadorParaWeb.new(Formatafacil::ARTIGO_PDF).otimiza 
+        Formatafacil::OtimizadorParaWeb.new(Formatafacil::ARTIGO_PDF).otimiza
       end
     rescue Exception => e
       logger.error {e.message}
     end
-    
+
   end
-  
+
 end
-
-
-
 
 desc 'Auto detecta o comando com base no arquivo de configuração'
 command :auto do |c|
-  
-  
+
+
   c.action do |global,options,args|
-    
+
     if (global['logfile'])
       logger = Logger.new('formatafacil.log')
     else
       logger = Logger.new(STDERR)
     end
     logger.level = Logger::WARN
-    
+
     begin
       tarefa = Formatafacil::TarefaChooser.new().escolhe_tarefa
       tarefa.logger = logger
@@ -106,9 +104,35 @@ command :auto do |c|
     rescue Exception => e
       logger.error {e.message}
     end
-    
+
   end
-  
+
+end
+
+
+
+desc 'Lista modelos disponíveis'
+command :modelos do |c|
+
+  c.action do |global,options,args|
+
+    if (global['logfile'])
+      logger = Logger.new('formatafacil.log')
+    else
+      logger = Logger.new(STDERR)
+    end
+    logger.level = Logger::WARN
+
+    begin
+      tarefa = Formatafacil::TarefaModelos.new()
+      tarefa.logger = logger
+      tarefa.executa
+    rescue Exception => e
+      logger.error {e.message}
+    end
+
+  end
+
 end
 
 
