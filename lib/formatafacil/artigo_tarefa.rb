@@ -10,6 +10,8 @@ module Formatafacil
 
   class ArquivoDeArtigoNaoEncontradoException < StandardError
   end
+  class ArquivoDeResumoNaoEncontradoError < StandardError
+  end
 
   class ArtigoTarefa < Tarefa
     attr_accessor 'modelo'
@@ -146,7 +148,13 @@ module Formatafacil
     def verifica_conteudos
       identifica_modelo
       File.open(@arquivo_texto, 'r') {|f| @texto = f.read} if @texto.nil?
-      File.open(@arquivo_resumo, 'r') {|f| @resumo = f.read} if @resumo.nil?
+      File.open(@arquivo_resumo, 'r') {|f|
+        begin
+          @resumo = f.read
+        rescue Errno::ENOENT
+          raise Formatafacil::ArquivoDeResumoNaoEncontradoError, "Não possível encontrar o arquivo de resumo: [\"resumo.md\"]. Crie o arquivo com o nome apropriado e tente novamente."
+        end
+        } if @resumo.nil?
       File.open(@arquivo_abstract, 'r') {|f| @abstract = f.read} if @abstract.nil?
       File.open(@arquivo_bibliografia, 'r') {|f| @bibliografia = f.read} if @bibliografia.nil?
       File.open(@arquivo_metadados, 'r') {|f| @metadados = YAML.load(f.read)} if @metadados.empty?
