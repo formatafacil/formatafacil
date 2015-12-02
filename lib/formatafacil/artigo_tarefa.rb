@@ -8,6 +8,9 @@ require 'json'
 
 module Formatafacil
 
+  class ArquivoDeArtigoNaoEncontradoException < StandardError
+  end
+
   class ArtigoTarefa < Tarefa
     attr_accessor 'modelo'
     attr_accessor 'metadados'
@@ -154,7 +157,9 @@ module Formatafacil
         t = Formatafacil::Template.new()
         @modelo = t.procura_modelo_de_artigo
         if (@modelo.nil?) then
-          raise "Modelo não encontrado. Modelos disponíveis: #{t.list_names}"
+          #raise "Modelo não encontrado. Modelos disponíveis: #{t.list_names}"
+          nomes_dos_arquivos = t.list_names.map { |n| "#{n}.md" }
+          raise ArquivoDeArtigoNaoEncontradoException, "Não possível encontrar um arquivo de artigo: #{nomes_dos_arquivos}. Crie o arquivo com o nome do modelo apropriado e tente novamente."
         end
       end
       @arquivo_texto = "#{@modelo}.md"

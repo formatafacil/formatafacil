@@ -248,5 +248,24 @@ eos
 
   end
 
+  context "Quando está faltando arquivo" do
+    context "de texto principal" do
+      before do
+        allow(File).to receive(:exist?).with("artigo-abnt.md") {false}
+        #allow(File).to receive(:open).with('artigo-abnt.md','r').and_yield( StringIO.new(@texto) )
+        #allow(File).to receive(:open).with('resumo.md','r').and_yield( StringIO.new(@resumo) )
+        #allow(File).to receive(:open).with('abstract.md','r').and_yield( StringIO.new(@abstract) )
+        #allow(File).to receive(:open).with('bibliografia.md','r').and_yield( StringIO.new(@bibliografia) )
+        #allow(File).to receive(:open).with('metadados.yaml','r').and_yield( StringIO.new(@metadados) )
+        @buffer = StringIO.new()
+        allow(File).to receive(:open).with("artigo.tex",'w').and_yield( @buffer )
+        @tarefa = Formatafacil::ArtigoTarefa.new()
+
+      end
+      it "imprime mensagem indicando que não encontrou um arquivo de texto" do
+        expect{@tarefa.executa}.to raise_error("Não possível encontrar um arquivo de artigo: [\"artigo-abnt.md\"]. Crie o arquivo com o nome do modelo apropriado e tente novamente.")
+      end
+    end
+  end
 
 end
