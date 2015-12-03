@@ -1,6 +1,10 @@
 # formatafacil Change Log
 
 
+## 0.2.2
+
+- Tratamento de erros #3
+
 ## 0.2.1
 
 - tratamento de erros: falta de arquivos, problemas nos metadados #2
