@@ -61,11 +61,11 @@ Com esta aplicação você poderá gerar artigos para o SBC, monografia, dissert
 
 Lista templates:
 
-  formatafacil modelos
+    formatafacil modelos
 
 Cria um diretório e estrutura de um artigo no formato do sbc:
 
-  formatafacil cria --template=artigo-abnt
+    formatafacil cria --template=artigo-abnt
 
 ## make configuration easy for advanced users
 
