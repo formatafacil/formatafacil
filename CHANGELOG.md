@@ -1,5 +1,10 @@
 # formatafacil Change Log
 
+
+## 0.2.0
+
+- tratamento de erros: falta de arquivos, problemas nos metadados #2
+
 ## 0.1.5
 
 - fix bug: otimizar pdfs para a WEB
