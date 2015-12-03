@@ -167,7 +167,12 @@ module Formatafacil
         raise Formatafacil::ArquivoNaoEncontradoError, "Não possível encontrar o arquivo 'bibliografia.md'. Crie o arquivo com o nome apropriado e tente novamente."
       end
       begin
-        File.open(@arquivo_metadados, 'r') {|f| @metadados = YAML.load(f.read)} if @metadados.empty?
+        if @metadados.empty? then
+          File.open(@arquivo_metadados, 'r') do |f|
+            metadados_lido = YAML.load(f.read)
+            @metadados = if metadados_lido.nil? or !metadados_lido then {} else metadados_lido end
+          end
+        end
       rescue Errno::ENOENT
         raise Formatafacil::ArquivoNaoEncontradoError, "Não possível encontrar o arquivo '#{@arquivo_metadados}'. Crie o arquivo com o nome apropriado e tente novamente."
       rescue Psych::SyntaxError

@@ -325,6 +325,26 @@ eos
 
   end
 
+  context "Invocando com arquivos vazios " do
+    before do
+      allow(File).to receive(:exist?).with("artigo-abnt.md") {true}
+      allow(File).to receive(:open).with('artigo-abnt.md','r').and_yield(StringIO.new(""))
+      allow(File).to receive(:open).with('resumo.md','r').and_yield(StringIO.new(""))
+      allow(File).to receive(:open).with('abstract.md','r').and_yield(StringIO.new(""))
+      allow(File).to receive(:open).with('bibliografia.md','r').and_yield(StringIO.new(""))
+      allow(File).to receive(:open).with('metadados.yaml','r').and_yield(StringIO.new(""))
+      @buffer = StringIO.new()
+      allow(File).to receive(:open).with("artigo.tex",'w').and_yield( @buffer )
+      @tarefa = Formatafacil::ArtigoTarefa.new()
+      @tarefa.executa
+    end
+
+    it "gera o arquivo sem problemas" do
+      expect(@buffer.string).not_to be_empty
+    end
+
+  end
+
   context "Erro no arquivo metadados.yaml" do
     before do
       allow(File).to receive(:exist?).with("artigo-abnt.md") {true}
