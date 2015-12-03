@@ -257,24 +257,23 @@ eos
         @tarefa = Formatafacil::ArtigoTarefa.new()
       end
       it "imprime mensagem indicando que não encontrou um arquivo de texto" do
-        expect{@tarefa.executa}.to raise_error(Formatafacil::ArquivoDeArtigoNaoEncontradoException, "Não possível encontrar um arquivo de artigo: [\"artigo-abnt.md\"]. Crie o arquivo com o nome do modelo apropriado e tente novamente.")
+        expect{@tarefa.executa}.to raise_error(Formatafacil::ArquivoNaoEncontradoError, "Não possível encontrar um arquivo de artigo: [\"artigo-abnt.md\"]. Crie o arquivo com o nome do modelo apropriado e tente novamente.")
       end
     end
     context "resumo.md" do
       before do
         allow(File).to receive(:exist?).with("artigo-abnt.md") {true}
         allow(File).to receive(:open).with('artigo-abnt.md','r').and_yield(StringIO.new("texto"))
-        allow(File).to receive(:open).with('resumo.md','r').and_raise(Formatafacil::ArquivoDeResumoNaoEncontradoError, "Não possível encontrar o arquivo de resumo: [\"resumo.md\"]. Crie o arquivo com o nome apropriado e tente novamente.")
+        allow(File).to receive(:open).with('resumo.md','r').and_raise(Errno::ENOENT)
         #allow(File).to receive(:open).with('abstract.md','r').and_yield( StringIO.new(@abstract) )
         #allow(File).to receive(:open).with('bibliografia.md','r').and_yield( StringIO.new(@bibliografia) )
         #allow(File).to receive(:open).with('metadados.yaml','r').and_yield( StringIO.new(@metadados) )
         @buffer = StringIO.new()
         allow(File).to receive(:open).with("artigo.tex",'w').and_yield( @buffer )
         @tarefa = Formatafacil::ArtigoTarefa.new()
-
       end
       it "imprime mensagem indicando que não encontrou o arquivo" do
-        expect{@tarefa.executa}.to raise_error(Formatafacil::ArquivoDeResumoNaoEncontradoError, "Não possível encontrar o arquivo de resumo: [\"resumo.md\"]. Crie o arquivo com o nome apropriado e tente novamente.")
+        expect{@tarefa.executa}.to raise_error(Formatafacil::ArquivoNaoEncontradoError, "Não possível encontrar o arquivo 'resumo.md'. Crie o arquivo com o nome apropriado e tente novamente.")
       end
     end
     context "abstract.md" do
@@ -282,20 +281,66 @@ eos
         allow(File).to receive(:exist?).with("artigo-abnt.md") {true}
         allow(File).to receive(:open).with('artigo-abnt.md','r').and_yield(StringIO.new("texto"))
         allow(File).to receive(:open).with('resumo.md','r').and_yield(StringIO.new("resumo"))
-        allow(File).to receive(:open).with('abstract.md','r').and_raise(Formatafacil::ArquivoNaoEncontradoError, "Não possível encontrar o arquivo de resumo: [\"abstract.md\"]. Crie o arquivo com o nome apropriado e tente novamente.")
-        #allow(File).to receive(:open).with('abstract.md','r').and_yield( StringIO.new(@abstract) )
-        #allow(File).to receive(:open).with('bibliografia.md','r').and_yield( StringIO.new(@bibliografia) )
+        allow(File).to receive(:open).with('abstract.md','r').and_raise(Errno::ENOENT)
+        @buffer = StringIO.new()
+        allow(File).to receive(:open).with("artigo.tex",'w').and_yield( @buffer )
+        @tarefa = Formatafacil::ArtigoTarefa.new()
+      end
+      it "imprime mensagem indicando que não encontrou o arquivo" do
+        expect{@tarefa.executa}.to raise_error(Formatafacil::ArquivoNaoEncontradoError, "Não possível encontrar o arquivo 'abstract.md'. Crie o arquivo com o nome apropriado e tente novamente.")
+      end
+    end
+    context "bibliografia.md" do
+      before do
+        allow(File).to receive(:exist?).with("artigo-abnt.md") {true}
+        allow(File).to receive(:open).with('artigo-abnt.md','r').and_yield(StringIO.new("texto"))
+        allow(File).to receive(:open).with('resumo.md','r').and_yield(StringIO.new("resumo"))
+        allow(File).to receive(:open).with('abstract.md','r').and_yield(StringIO.new("abstract"))
+        allow(File).to receive(:open).with('bibliografia.md','r').and_raise(Errno::ENOENT)
         #allow(File).to receive(:open).with('metadados.yaml','r').and_yield( StringIO.new(@metadados) )
         @buffer = StringIO.new()
         allow(File).to receive(:open).with("artigo.tex",'w').and_yield( @buffer )
         @tarefa = Formatafacil::ArtigoTarefa.new()
-
       end
       it "imprime mensagem indicando que não encontrou o arquivo" do
-        expect{@tarefa.executa}.to raise_error(Formatafacil::ArquivoNaoEncontradoError, "Não possível encontrar o arquivo de resumo: [\"abstract.md\"]. Crie o arquivo com o nome apropriado e tente novamente.")
+        expect{@tarefa.executa}.to raise_error(Formatafacil::ArquivoNaoEncontradoError, "Não possível encontrar o arquivo 'bibliografia.md'. Crie o arquivo com o nome apropriado e tente novamente.")
+      end
+    end
+    context "metadados.yaml" do
+      before do
+        allow(File).to receive(:exist?).with("artigo-abnt.md") {true}
+        allow(File).to receive(:open).with('artigo-abnt.md','r').and_yield(StringIO.new("texto"))
+        allow(File).to receive(:open).with('resumo.md','r').and_yield(StringIO.new("resumo"))
+        allow(File).to receive(:open).with('abstract.md','r').and_yield(StringIO.new("abstract"))
+        allow(File).to receive(:open).with('bibliografia.md','r').and_yield(StringIO.new("bibliografia"))
+        allow(File).to receive(:open).with('metadados.yaml','r').and_raise(Errno::ENOENT)
+        @buffer = StringIO.new()
+        allow(File).to receive(:open).with("artigo.tex",'w').and_yield( @buffer )
+        @tarefa = Formatafacil::ArtigoTarefa.new()
+      end
+      it "imprime mensagem indicando que não encontrou o arquivo" do
+        expect{@tarefa.executa}.to raise_error(Formatafacil::ArquivoNaoEncontradoError, "Não possível encontrar o arquivo 'metadados.yaml'. Crie o arquivo com o nome apropriado e tente novamente.")
       end
     end
 
   end
+
+  context "Erro no arquivo metadados.yaml" do
+    before do
+      allow(File).to receive(:exist?).with("artigo-abnt.md") {true}
+      allow(File).to receive(:open).with('artigo-abnt.md','r').and_yield(StringIO.new("texto"))
+      allow(File).to receive(:open).with('resumo.md','r').and_yield(StringIO.new("resumo"))
+      allow(File).to receive(:open).with('abstract.md','r').and_yield(StringIO.new("abstract"))
+      allow(File).to receive(:open).with('bibliografia.md','r').and_yield(StringIO.new("bibliografia"))
+      allow(File).to receive(:open).with('metadados.yaml','r').and_yield(StringIO.new("erro: \nSyntaxError"))
+      @buffer = StringIO.new()
+      allow(File).to receive(:open).with("artigo.tex",'w').and_yield( @buffer )
+      @tarefa = Formatafacil::ArtigoTarefa.new()
+    end
+    it "imprime mensagem indicando o erro no arquivo" do
+      expect{@tarefa.executa}.to raise_error(Formatafacil::MetadadosError, "Erro no arquivo 'metadados.yaml'. Atualize o arquivo e tente novamente.")
+    end
+  end
+
 
 end

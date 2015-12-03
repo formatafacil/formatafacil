@@ -8,9 +8,11 @@ require 'json'
 
 module Formatafacil
 
-  class ArquivoDeArtigoNaoEncontradoException < StandardError
+  ##
+  # Indica que um arquivo não foi encontrado.
+  class ArquivoNaoEncontradoError < StandardError
   end
-  class ArquivoDeResumoNaoEncontradoError < StandardError
+  class MetadadosError < StandardError
   end
 
   class ArtigoTarefa < Tarefa
@@ -148,16 +150,29 @@ module Formatafacil
     def verifica_conteudos
       identifica_modelo
       File.open(@arquivo_texto, 'r') {|f| @texto = f.read} if @texto.nil?
-      File.open(@arquivo_resumo, 'r') {|f|
-        begin
-          @resumo = f.read
-        rescue Errno::ENOENT
-          raise Formatafacil::ArquivoDeResumoNaoEncontradoError, "Não possível encontrar o arquivo de resumo: [\"resumo.md\"]. Crie o arquivo com o nome apropriado e tente novamente."
-        end
-        } if @resumo.nil?
-      File.open(@arquivo_abstract, 'r') {|f| @abstract = f.read} if @abstract.nil?
-      File.open(@arquivo_bibliografia, 'r') {|f| @bibliografia = f.read} if @bibliografia.nil?
-      File.open(@arquivo_metadados, 'r') {|f| @metadados = YAML.load(f.read)} if @metadados.empty?
+
+      begin
+        File.open(@arquivo_resumo, 'r') {|f| @resumo = f.read } if @resumo.nil?
+      rescue Errno::ENOENT => e
+        raise Formatafacil::ArquivoNaoEncontradoError, "Não possível encontrar o arquivo 'resumo.md'. Crie o arquivo com o nome apropriado e tente novamente."
+      end
+      begin
+        File.open(@arquivo_abstract, 'r') { |f| @abstract = f.read } if @abstract.nil?
+      rescue Errno::ENOENT => e
+        raise Formatafacil::ArquivoNaoEncontradoError, "Não possível encontrar o arquivo 'abstract.md'. Crie o arquivo com o nome apropriado e tente novamente."
+      end
+      begin
+        File.open(@arquivo_bibliografia, 'r') {|f| @bibliografia = f.read} if @bibliografia.nil?
+      rescue Errno::ENOENT
+        raise Formatafacil::ArquivoNaoEncontradoError, "Não possível encontrar o arquivo 'bibliografia.md'. Crie o arquivo com o nome apropriado e tente novamente."
+      end
+      begin
+        File.open(@arquivo_metadados, 'r') {|f| @metadados = YAML.load(f.read)} if @metadados.empty?
+      rescue Errno::ENOENT
+        raise Formatafacil::ArquivoNaoEncontradoError, "Não possível encontrar o arquivo '#{@arquivo_metadados}'. Crie o arquivo com o nome apropriado e tente novamente."
+      rescue Psych::SyntaxError
+        raise Formatafacil::MetadadosError, "Erro no arquivo 'metadados.yaml'. Atualize o arquivo e tente novamente."
+      end
     end
 
     def identifica_modelo
@@ -167,7 +182,7 @@ module Formatafacil
         if (@modelo.nil?) then
           #raise "Modelo não encontrado. Modelos disponíveis: #{t.list_names}"
           nomes_dos_arquivos = t.list_names.map { |n| "#{n}.md" }
-          raise ArquivoDeArtigoNaoEncontradoException, "Não possível encontrar um arquivo de artigo: #{nomes_dos_arquivos}. Crie o arquivo com o nome do modelo apropriado e tente novamente."
+          raise ArquivoNaoEncontradoError, "Não possível encontrar um arquivo de artigo: #{nomes_dos_arquivos}. Crie o arquivo com o nome do modelo apropriado e tente novamente."
         end
       end
       @arquivo_texto = "#{@modelo}.md"
