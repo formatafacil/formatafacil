@@ -1,19 +1,7 @@
 # Formatafacil
 
 
-## Installation
-
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'formatafacil'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
+## Instalação
 
     $ gem install formatafacil
 
@@ -22,11 +10,28 @@ Or install it yourself as:
 - `pandoc` para gerar os códigos latex
 - `pdflatex` - para compilar texto em pdf
 - `qpdf` se deseja compilar pdf otimizados para web
+- [formatafacil-templates](http://github.com/formatafacil/formatafacil-templates) (instalado automaticamente através do gem)
 
 ## Usage
 
-TODO: Write usage instructions here
+### Se instalou com gem
 
+    formatafacil --help
+
+### Se baixou diretamente do github
+
+    bundle update
+    bundle exec ./exe/formatafacil --help
+
+### Em desenvolvimento
+
+Muitas das funcionalidades ainda estão em desenvolvimento, **execute os testes**
+para verificar o que está funcionando corretamente.
+
+    bundle update
+    bundle exec rspec
+
+**TODO**: Write usage instructions here
 
 # A command line app
 As [David said], a cli command utility should:
@@ -38,27 +43,29 @@ necessita.
 
 ## be easy to use
 
-Para gerar um artigo no [formato sbc (Sociedade brasileira de computação)](http://www.sbc.org.br/en/index.php?option=com_jdownloads&task=view.download&catid=32&cid=38&Itemid=195):
+Para gerar um artigo no [formato abnt](https://github.com/abntex/abntex2/blob/master/doc/latex/abntex2/examples/abntex2-modelo-artigo.tex):
 
-    formatafacil artigo -t sbc
+    git clone git@github.com:formatafacil/artigo-abnt.git
+    cd artigo-abnt
+    formatafacil artigo
 
 ## be helpful
 
 Com esta aplicação você poderá gerar artigos para o SBC, monografia, dissertação, tese, etc.
 
-## play well with others
+## play well with others (pending)
 
-    formatafacil artigo -t sbc --log log.txt --input artigo.md --output meu-artigo-sbc.pdf
+    formatafacil artigo -m artigo-abnt --log log.txt --input artigo.md --output meu-artigo-sbc.pdf
 
 ## delight casual users
 
 Lista templates:
 
-  formatafacil templates
+  formatafacil modelos
 
 Cria um diretório e estrutura de um artigo no formato do sbc:
 
-  formatafacil cria --template=artigo-sbc
+  formatafacil cria --template=artigo-abnt
 
 ## make configuration easy for advanced users
 
@@ -70,7 +77,7 @@ TODO
 
 ## be well-tested and as bug free as possible
 
-TODO
+    bundle exec rspec
 
 ## be easy to maintain
 
