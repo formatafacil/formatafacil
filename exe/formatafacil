@@ -33,7 +33,7 @@ command :artigo do |c|
   c.switch [:w, 'otimiza-para-web'], :default_value => false
 
   c.desc 'Diretório para execução'
-  c.flag [:dir]
+  c.flag [:d, :dir]
 
 
   c.action do |global,options,args|
@@ -49,6 +49,9 @@ command :artigo do |c|
 
       if (options['pdf'])
         compilador = Formatafacil::Compila.new()
+        if (options['otimiza-para-web']) then
+          compilador.otimizador = Formatafacil::OtimizadorParaWeb.new('artigo.pdf')
+        end
       end
 
       tarefa = Formatafacil::ArtigoTarefa.new(:compilador => compilador)

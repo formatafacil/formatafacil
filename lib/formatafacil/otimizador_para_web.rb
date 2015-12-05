@@ -7,17 +7,16 @@ module Formatafacil
     def initialize(arquivo)
       @arquivo=arquivo
     end
-    
+
     def bkp_prefix(arquivo)
       "bkp-#{arquivo}"
     end
-    
-    def otimiza
+
+    def otimiza_pdf
       File.rename(@arquivo, bkp_prefix(@arquivo))
-      system("qpdf --linearize #{bkp_prefix(@arquivo)} #{@arquivo}")
+      Kernel::system("qpdf --linearize #{bkp_prefix(@arquivo)} #{@arquivo}")
       File.delete(bkp_prefix(@arquivo))
     end
-    
+
   end
 end
-

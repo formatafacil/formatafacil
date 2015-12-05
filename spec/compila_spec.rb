@@ -3,15 +3,35 @@ require 'formatafacil/compila'
 
 describe Formatafacil::Compila do
 
+
   context 'Quando existe o arquivo artigo.tex', :i5 do
     before do
       allow(File).to receive('exist?').with("artigo.tex") { true }
     end
-    it "invoca latexmk para criação do pdf" do
-      allow(File).to receive('exist?').with("artigo.pdf") { true }
-      expect(Kernel).to receive(:system).with('latexmk -pdf -time -silent artigo.tex')
-      subject.compila_artigo()
+    context 'e arquivo foi compilado com sucesso' do
+      before do
+        allow(File).to receive('exist?').with("artigo.pdf") { true }
+        expect(Kernel).to receive(:system).with('latexmk -pdf -time -silent artigo.tex')
+      end
+      it "invoca latexmk para criação do pdf" do
+        subject.compila_artigo()
+      end
+      context "Quando otimizacão foi configurada", :i8 do
+        before do
+          subject.otimizador = double()
+        end
+        it "linealiza o pdf otimizando-o para web" do
+          expect(subject.otimizador).to receive('otimiza_pdf')
+          subject.compila_artigo()
+        end
+      end
+      context "Quando otimização não foi configurada" do
+        it "não tenta invoca otimizador nil" do
+          expect{subject.compila_artigo()}.not_to raise_error
+        end
+      end
     end
+
     context "Se o pdf não foi gerado com sucesso" do
       before do
         expect(Kernel).to receive(:system)
