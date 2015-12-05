@@ -63,6 +63,10 @@ Lista templates:
 
     formatafacil modelos
 
+Gera o pdf otimizando-o para vizualização na web (utilizando `qpdf`):
+
+    formatafacil artigo -w
+
 Cria um diretório e estrutura de um artigo no formato do sbc:
 
     formatafacil cria --template=artigo-abnt

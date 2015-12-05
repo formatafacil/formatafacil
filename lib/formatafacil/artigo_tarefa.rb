@@ -37,6 +37,9 @@ module Formatafacil
     attr_accessor 'arquivo_saida_pdf'
     attr_accessor 'arquivo_saida_latex'
 
+    # Tarefa que pode ser encadeada para compilar o artigo para pdf
+    attr_accessor 'compilador'
+
     ##
     # Um parâmetro obrigatório é o modelo do artigo
     #
@@ -59,6 +62,7 @@ module Formatafacil
       verifica_conteudos
       unifica_metadados
       escreve_artigo_latex
+      compila_pdf
       #ler_configuracao
       #executa_com_configuracao
     end
@@ -341,6 +345,9 @@ module Formatafacil
       }
     end
 
+    def compila_pdf
+      @compilador.compila_artigo unless @compilador.nil?
+    end
 
 
   end

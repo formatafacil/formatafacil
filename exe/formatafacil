@@ -27,10 +27,14 @@ desc 'Gera artigos em latex e compila para pdf'
 command :artigo do |c|
 
   c.desc 'Gera o arquivo pdf compilando o arquivo latex'
-  c.switch :pdf
+  c.switch :pdf, :default_value => true
 
-  c.desc 'Seleciona o modelo do artigo'
-  c.flag [:m,:modelo]
+  c.desc 'Linealiza o pdf otimizando-o para web'
+  c.switch [:w, 'otimiza-para-web'], :default_value => false
+
+  c.desc 'Diretório para execução'
+  c.flag [:dir]
+
 
   c.action do |global,options,args|
     if (global['logfile'])
@@ -38,12 +42,26 @@ command :artigo do |c|
     else
       logger = Logger.new(STDERR)
     end
-    logger.level = Logger::WARN
+    logger.level = Logger::INFO
 
     begin
-      tarefa = Formatafacil::ArtigoTarefa.new()
+      compilador = nil
+
+      if (options['pdf'])
+        compilador = Formatafacil::Compila.new()
+      end
+
+      tarefa = Formatafacil::ArtigoTarefa.new(:compilador => compilador)
       tarefa.logger = logger
-      tarefa.executa
+
+      if options['dir'] then
+        Dir.chdir(options['dir']) do
+          tarefa.executa
+        end
+      else
+        tarefa.executa
+      end
+
     rescue Exception => e
       logger.error {e.message}
     end

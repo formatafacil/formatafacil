@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'formatafacil/artigo_tarefa'
+require 'formatafacil/compila'
 require 'tmpdir'
 require 'yaml'
 #require 'io'
@@ -164,7 +165,7 @@ eos
     end
   end
 
-  context "Quando os conteúdos são lidos de arquivos", :wip do
+  context "Quando os conteúdos são lidos de arquivos" do
     before do
       @modelo = "artigo-abnt"
       @texto = <<eos
@@ -362,5 +363,16 @@ eos
     end
   end
 
+  context "Quando é criando com um compilador", :i5 do
+    before do
+      @compilador = double()
+      @tarefa = Formatafacil::ArtigoTarefa.new(modelo: 'artigo-abnt', texto: 'texto', 'resumo' => 'resumo', abstract: 'abstract', metadados: {a:'b'}, bibliografia: 'bibliografia', compilador: @compilador)
+    end
+    it "Invoca o compilador" do
+      expect(@compilador).to receive(:compila_artigo)
+      @tarefa.executa
+    end
+
+  end
 
 end
