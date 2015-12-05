@@ -99,35 +99,7 @@ command :compila do |c|
     end
 
   end
-
 end
-
-desc 'Auto detecta o comando com base no arquivo de configuração'
-command :auto do |c|
-
-
-  c.action do |global,options,args|
-
-    if (global['logfile'])
-      logger = Logger.new('formatafacil.log')
-    else
-      logger = Logger.new(STDERR)
-    end
-    logger.level = Logger::WARN
-
-    begin
-      tarefa = Formatafacil::TarefaChooser.new().escolhe_tarefa
-      tarefa.logger = logger
-      tarefa.executa
-    rescue Exception => e
-      logger.error {e.message}
-    end
-
-  end
-
-end
-
-
 
 desc 'Lista modelos disponíveis'
 command :modelos do |c|
