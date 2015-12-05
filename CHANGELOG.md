@@ -1,6 +1,11 @@
 # formatafacil Change Log
 
 
+## 0.2.4
+
+- Otimização do pdf para web [#8](https://github.com/formatafacil/formatafacil/issues/8)
+- Remoção do comando `auto` [#7](https://github.com/formatafacil/formatafacil/issues/7)
+
 ## 0.2.3
 
 - Compilação do pdf após geração do artigo em latex [#5](https://github.com/formatafacil/formatafacil/issues/5)
